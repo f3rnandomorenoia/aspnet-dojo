@@ -1,0 +1,332 @@
+/* ASP.NET Dojo — estilos mobile-first */
+
+:root {
+  --fondo: #0d1117;
+  --panel: #161b27;
+  --panel-alto: #1d2433;
+  --borde: #2a3347;
+  --texto: #e6edf3;
+  --texto-suave: #8b96a8;
+  --primario: #7c5cff;
+  --primario-alto: #9678ff;
+  --acento: #22d3a5;
+  --error: #ff5c7a;
+  --radio: 16px;
+  --fuente-codigo: "SF Mono", "Cascadia Code", "Fira Code", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+  min-height: 100dvh;
+}
+
+#app {
+  max-width: 560px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ---------- Cabecera e inicio ---------- */
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+
+.marca { display: flex; align-items: center; gap: 10px; }
+
+.marca-logo {
+  font-family: var(--fuente-codigo);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primario), var(--acento));
+  color: #fff;
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+.marca-nombre { font-weight: 800; font-size: 18px; }
+
+.stats { display: flex; gap: 8px; }
+
+.stat {
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.intro { color: var(--texto-suave); font-size: 15px; padding-bottom: 20px; }
+
+.modulos { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+
+.modulo {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 16px;
+  transition: transform 0.1s ease, border-color 0.15s ease;
+}
+
+.modulo:active { transform: scale(0.98); }
+.modulo.completo { border-color: var(--acento); }
+.modulo.bloqueado { opacity: 0.45; cursor: not-allowed; }
+
+.modulo-icono {
+  font-size: 28px;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: var(--panel-alto);
+  border-radius: 14px;
+}
+
+.modulo-info { flex: 1; min-width: 0; }
+.modulo-info h2 { font-size: 16px; }
+.modulo-info p { color: var(--texto-suave); font-size: 13px; margin: 2px 0 8px; }
+
+.modulo-progreso { font-size: 12px; color: var(--texto-suave); font-weight: 600; }
+.modulo.completo .modulo-progreso { color: var(--acento); }
+
+.barra {
+  height: 8px;
+  background: var(--panel-alto);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.barra-relleno {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primario), var(--acento));
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.pie {
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 12px;
+  padding: 20px 0;
+}
+
+/* ---------- Lección ---------- */
+
+.cabecera-leccion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.boton-salir {
+  font-size: 18px;
+  color: var(--texto-suave);
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+.boton-salir:active { background: var(--panel); }
+
+.barra-leccion { flex: 1; margin: 0; }
+
+.zona-ejercicio { flex: 1; display: flex; flex-direction: column; gap: 16px; padding-bottom: 16px; }
+
+.etiqueta-modulo {
+  color: var(--primario-alto);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.enunciado { font-size: 20px; line-height: 1.35; }
+
+.pista { color: var(--texto-suave); font-size: 12px; }
+
+/* Quiz */
+
+.opciones { display: flex; flex-direction: column; gap: 10px; }
+
+.opcion {
+  text-align: left;
+  background: var(--panel);
+  border: 2px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 14px 16px;
+  font-size: 15px;
+  line-height: 1.4;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.opcion:active { transform: scale(0.99); }
+.opcion.elegida { border-color: var(--primario); background: rgba(124, 92, 255, 0.12); }
+
+/* Código y huecos */
+
+.codigo {
+  font-family: var(--fuente-codigo);
+  font-size: 13.5px;
+  line-height: 2.1;
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 16px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+}
+
+.ranura {
+  font-family: var(--fuente-codigo);
+  font-size: 13px;
+  background: var(--panel-alto);
+  border: 1.5px dashed var(--texto-suave);
+  border-radius: 8px;
+  padding: 3px 12px;
+  margin: 0 2px;
+  color: var(--texto-suave);
+  vertical-align: baseline;
+}
+
+.ranura.llena {
+  border-style: solid;
+  border-color: var(--primario);
+  background: rgba(124, 92, 255, 0.15);
+  color: var(--texto);
+}
+
+/* Fichas */
+
+.banco { display: flex; flex-wrap: wrap; gap: 10px; }
+.banco-lineas { flex-direction: column; align-items: stretch; }
+
+.ficha {
+  font-family: var(--fuente-codigo);
+  font-size: 13.5px;
+  background: var(--panel-alto);
+  border: 1px solid var(--borde);
+  border-bottom-width: 3px;
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.ficha:active { transform: translateY(1px); }
+.ficha.usada { opacity: 0.25; }
+.ficha-linea { text-align: left; white-space: pre-wrap; word-break: break-word; }
+
+.respuesta-tokens,
+.respuesta-lineas {
+  min-height: 64px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: flex-start;
+  background: var(--panel);
+  border: 1.5px dashed var(--borde);
+  border-radius: var(--radio);
+  padding: 12px;
+}
+
+.respuesta-lineas { flex-direction: column; align-items: stretch; min-height: 120px; }
+.respuesta-tokens .ficha, .respuesta-lineas .ficha { border-color: var(--primario); }
+
+/* Pie de lección / resultado */
+
+.pie-leccion {
+  position: sticky;
+  bottom: 0;
+  background: var(--fondo);
+  padding: 12px 0 calc(16px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid var(--borde);
+}
+
+.boton-primario {
+  background: linear-gradient(135deg, var(--primario), var(--primario-alto));
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  border-radius: var(--radio);
+  padding: 16px;
+  width: 100%;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.boton-primario:active { transform: scale(0.98); }
+.boton-primario:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.panel-resultado { display: flex; flex-direction: column; gap: 6px; }
+.panel-resultado strong { font-size: 17px; }
+.panel-resultado p { color: var(--texto-suave); font-size: 14px; line-height: 1.45; }
+
+.pie-leccion.correcto { border-top-color: var(--acento); }
+.pie-leccion.correcto strong { color: var(--acento); }
+.pie-leccion.incorrecto { border-top-color: var(--error); }
+.pie-leccion.incorrecto strong { color: var(--error); }
+.pie-leccion.incorrecto .boton-primario { background: linear-gradient(135deg, var(--error), #ff7d94); }
+
+/* ---------- Final de módulo ---------- */
+
+.pantalla-final {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.final-icono { font-size: 64px; }
+.pantalla-final h1 { font-size: 24px; }
+.pantalla-final p { color: var(--texto-suave); }
+
+.final-stats { display: flex; gap: 12px; margin: 8px 0 16px; }
+.stat-grande { font-size: 16px; padding: 10px 18px; }
+
+/* ---------- Escritorio ---------- */
+
+@media (min-width: 700px) {
+  body { padding: 24px 0; }
+  #app {
+    min-height: calc(100dvh - 48px);
+    border: 1px solid var(--borde);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.01);
+  }
+  .pie-leccion { border-radius: 0 0 24px 24px; }
+}

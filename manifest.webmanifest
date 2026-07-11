@@ -1,0 +1,19 @@
+{
+  "name": "ASP.NET Dojo",
+  "short_name": "ASP.NET Dojo",
+  "description": "Aprende ASP.NET Core de .NET 10 desde el móvil con ejercicios interactivos.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
