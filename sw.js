@@ -1,5 +1,5 @@
 // Service worker: red primero, caché como respaldo (permite usar la app sin conexión).
-const CACHE = "aspnet-dojo-v1";
+const CACHE = "aspnet-dojo-v2";
 const RECURSOS = [
   "./",
   "./index.html",

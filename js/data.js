@@ -7,6 +7,9 @@
 //  - ordenar: construir la secuencia correcta tocando fichas.
 //             `items` en orden correcto; `tokens:true` = fichas en línea (código),
 //             sin él = líneas apiladas.
+//
+// Cualquier ejercicio puede llevar `parte`: subtítulo de sección que se muestra
+// bajo el nombre del módulo (para módulos largos divididos en partes).
 
 const CURSO = [
   {
@@ -421,16 +424,301 @@ const CURSO = [
       },
       {
         tipo: "quiz",
-        pregunta: "Terminaste el curso 🎉 ¿Cuál es el mejor siguiente paso?",
+        pregunta: "Fin de la teoría 🎓 ¿Qué toca ahora?",
         opciones: [
-          "Crear tu propia API real: dotnet new webapi y aplicar todo esto",
+          "El módulo final: construir GastosAPI, una aplicación completa de principio a fin 🏆",
           "Memorizar la documentación entera antes de programar",
           "Esperar a .NET 11 para empezar",
           "Volver a hacer solo quizzes",
         ],
         correcta: 0,
         explicacion:
-          "Se aprende construyendo. Empieza con una API pequeña (tareas, gastos, recetas…) con EF Core y autenticación, y súbela a GitHub.",
+          "Se aprende construyendo. En el siguiente módulo montarás una API real pieza a pieza: modelo, base de datos, registro, login con JWT y endpoints protegidos.",
+      },
+    ],
+  },
+  {
+    id: "app-completa",
+    icono: "🏆",
+    titulo: "App completa: GastosAPI",
+    descripcion: "Construye una API real de principio a fin",
+    ejercicios: [
+      // ---- Parte 1 · El plan y el modelo de datos ----
+      {
+        tipo: "quiz",
+        parte: "Parte 1 · El plan y el modelo de datos",
+        pregunta: "Vas a construir GastosAPI: cada usuario registra sus gastos y solo puede ver los suyos. ¿Qué piezas necesita como mínimo?",
+        opciones: [
+          "Modelo de datos, base de datos, registro/login y endpoints protegidos",
+          "Solo endpoints GET, el resto es opcional",
+          "Un frontend en Angular antes que nada",
+          "Un servidor dedicado y Kubernetes",
+        ],
+        correcta: 0,
+        explicacion:
+          "Antes de escribir código, piensa las piezas: QUÉ datos guardas (modelo), DÓNDE (base de datos), QUIÉN entra (auth) y CÓMO se accede (endpoints). Este módulo las construye en ese orden.",
+      },
+      {
+        tipo: "huecos",
+        parte: "Parte 1 · El plan y el modelo de datos",
+        enunciado: "Define las dos entidades del dominio:",
+        codigo:
+          "public class Usuario\n{\n    public int Id { get; set; }\n    public string Email { get; set; } = \"\";\n    public string {0} { get; set; } = \"\";\n    public List<Gasto> Gastos { get; set; } = new();\n}\n\npublic class Gasto\n{\n    public int Id { get; set; }\n    public string Concepto { get; set; } = \"\";\n    public decimal Cantidad { get; set; }\n    public int {1} { get; set; }\n}",
+        respuestas: ["PasswordHash", "UsuarioId"],
+        banco: ["PasswordHash", "UsuarioId", "Password", "UsuarioEmail", "Clave"],
+        explicacion:
+          "Nunca se guarda la contraseña, solo su hash. UsuarioId es la clave foránea: cada gasto pertenece a un usuario.",
+      },
+      {
+        tipo: "quiz",
+        parte: "Parte 1 · El plan y el modelo de datos",
+        pregunta: "¿Qué relación hay entre Usuario y Gasto?",
+        opciones: [
+          "Uno a muchos: un usuario tiene muchos gastos, cada gasto tiene un usuario",
+          "Muchos a muchos: hace falta una tabla intermedia",
+          "Uno a uno: un usuario, un gasto",
+          "Ninguna, son tablas independientes",
+        ],
+        correcta: 0,
+        explicacion:
+          "La lista Gastos en Usuario y la FK UsuarioId en Gasto definen la relación 1:N. EF Core la detecta por convención, sin configuración extra.",
+      },
+      // ---- Parte 2 · La base de datos ----
+      {
+        tipo: "huecos",
+        parte: "Parte 2 · La base de datos",
+        enunciado: "Crea el DbContext con sus dos tablas:",
+        codigo:
+          "public class GastosDb : DbContext\n{\n    public GastosDb(DbContextOptions<GastosDb> options) : base(options) { }\n\n    public {0}<Usuario> Usuarios => Set<Usuario>();\n    public {1}<Gasto> Gastos => Set<Gasto>();\n}",
+        respuestas: ["DbSet", "DbSet"],
+        banco: ["DbSet", "DbSet", "DbTable", "List", "Entity"],
+        explicacion:
+          "Cada DbSet es una tabla consultable con LINQ. Con esto EF Core ya conoce el modelo completo de GastosAPI.",
+      },
+      {
+        tipo: "huecos",
+        parte: "Parte 2 · La base de datos",
+        enunciado: "Registra el contexto con SQLite en Program.cs:",
+        codigo: "builder.Services.{0}<GastosDb>(opt =>\n    opt.{1}(\"Data Source=gastos.db\"));",
+        respuestas: ["AddDbContext", "UseSqlite"],
+        banco: ["AddDbContext", "UseSqlite", "AddDatabase", "UseSqlServer", "OpenDb"],
+        explicacion:
+          "SQLite es perfecto para desarrollar: un archivo, sin servidor. Cambiar a SQL Server o PostgreSQL en producción es cambiar esta línea.",
+      },
+      {
+        tipo: "ordenar",
+        parte: "Parte 2 · La base de datos",
+        enunciado: "Crea la base de datos a partir del modelo:",
+        items: [
+          "dotnet ef migrations add ModeloInicial",
+          "dotnet ef database update",
+          "Comprobar que se creó el archivo gastos.db",
+        ],
+        explicacion:
+          "La migración captura el modelo en código; update lo aplica creando las tablas Usuarios y Gastos en gastos.db.",
+      },
+      // ---- Parte 3 · Registro de usuarios ----
+      {
+        tipo: "quiz",
+        parte: "Parte 3 · Registro de usuarios",
+        pregunta: "¿Por qué guardamos PasswordHash en vez de la contraseña?",
+        opciones: [
+          "Si roban la base de datos no obtienen contraseñas: el hash no se puede revertir",
+          "Porque el hash ocupa menos espacio",
+          "Porque las contraseñas no caben en un string",
+          "Es solo una convención de nombres",
+        ],
+        correcta: 0,
+        explicacion:
+          "Un hash (con BCrypt, Argon2…) es de un solo sentido: al hacer login se vuelve a hashear lo que escribe el usuario y se comparan hashes. La contraseña original nunca se almacena.",
+      },
+      {
+        tipo: "huecos",
+        parte: "Parte 3 · Registro de usuarios",
+        enunciado: "Completa el endpoint de registro:",
+        codigo:
+          "app.MapPost(\"/auth/registro\", async (RegistroDto dto, GastosDb db) =>\n{\n    if (await db.Usuarios.{0}(u => u.Email == dto.Email))\n        return Results.{1}();\n\n    var usuario = new Usuario\n    {\n        Email = dto.Email,\n        PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)\n    };\n    db.Usuarios.Add(usuario);\n    await db.{2}();\n    return Results.Created($\"/usuarios/{usuario.Id}\", usuario.Email);\n});",
+        respuestas: ["AnyAsync", "Conflict", "SaveChangesAsync"],
+        banco: ["AnyAsync", "Conflict", "SaveChangesAsync", "FirstAsync", "Ok", "Commit"],
+        explicacion:
+          "AnyAsync comprueba si el email ya existe sin traer datos. Conflict devuelve 409. SaveChangesAsync escribe el nuevo usuario en la base de datos.",
+      },
+      {
+        tipo: "quiz",
+        parte: "Parte 3 · Registro de usuarios",
+        pregunta: "Alguien se registra con un email que ya existe. ¿Qué responde GastosAPI?",
+        opciones: [
+          "409 Conflict: el recurso choca con uno existente",
+          "200 OK con el usuario antiguo",
+          "500 Internal Server Error",
+          "404 Not Found",
+        ],
+        correcta: 0,
+        explicacion:
+          "Cada situación tiene su código: 409 dice exactamente \"esto choca con algo que ya existe\". El cliente puede mostrar \"ese email ya está registrado\".",
+      },
+      // ---- Parte 4 · Login con JWT ----
+      {
+        tipo: "ordenar",
+        parte: "Parte 4 · Login con JWT",
+        enunciado: "Ordena el flujo del endpoint de login:",
+        items: [
+          "Recibir email y contraseña (LoginDto)",
+          "Buscar el usuario por email en la base de datos",
+          "Verificar la contraseña contra el PasswordHash",
+          "Generar el token JWT con los datos del usuario",
+          "Devolver el token al cliente",
+        ],
+        explicacion:
+          "Si el usuario no existe o el hash no coincide, se devuelve 401 sin decir cuál de las dos cosas falló (para no dar pistas a atacantes).",
+      },
+      {
+        tipo: "huecos",
+        parte: "Parte 4 · Login con JWT",
+        enunciado: "Genera el token con la identidad del usuario dentro:",
+        codigo:
+          "var claims = new[]\n{\n    new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),\n    new Claim(ClaimTypes.Email, usuario.Email)\n};\n\nvar token = new JwtSecurityToken(\n    claims: claims,\n    {0}: DateTime.UtcNow.AddHours(8),\n    signingCredentials: credenciales);\n\nreturn Results.Ok(new JwtSecurityTokenHandler().{1}(token));",
+        respuestas: ["expires", "WriteToken"],
+        banco: ["expires", "WriteToken", "timeout", "Serialize", "Encode"],
+        explicacion:
+          "Los claims viajan firmados dentro del token: el id del usuario irá en cada petición sin consultar la base de datos. expires limita su vida útil.",
+      },
+      {
+        tipo: "quiz",
+        parte: "Parte 4 · Login con JWT",
+        pregunta: "¿Para qué guardamos el Id del usuario como claim en el token?",
+        opciones: [
+          "En cada petición sabremos QUIÉN llama leyendo el token, sin ir a la base de datos",
+          "Para que el frontend pinte el id en pantalla",
+          "Es obligatorio, sin id el token no compila",
+          "Para poder cambiar la contraseña después",
+        ],
+        correcta: 0,
+        explicacion:
+          "El token va firmado: nadie puede falsificar el claim. Los endpoints protegidos lo leerán para filtrar \"los gastos DE ESTE usuario\".",
+      },
+      {
+        tipo: "ordenar",
+        parte: "Parte 4 · Login con JWT",
+        enunciado: "Activa la autenticación en el orden correcto:",
+        items: [
+          "builder.Services.AddAuthentication(\"Bearer\").AddJwtBearer(...);",
+          "builder.Services.AddAuthorization();",
+          "var app = builder.Build();",
+          "app.UseAuthentication();",
+          "app.UseAuthorization();",
+        ],
+        explicacion:
+          "Primero se registran los servicios en el builder; tras Build() se añaden los middlewares: identificar al usuario (Authentication) siempre antes de comprobar permisos (Authorization).",
+      },
+      // ---- Parte 5 · Endpoints protegidos ----
+      {
+        tipo: "huecos",
+        parte: "Parte 5 · Endpoints protegidos",
+        enunciado: "Agrupa los endpoints de gastos y protégelos todos de una vez:",
+        codigo: "var gastos = app.{0}(\"/gastos\").{1}();",
+        respuestas: ["MapGroup", "RequireAuthorization"],
+        banco: ["MapGroup", "RequireAuthorization", "MapRoute", "UseAuthorization", "Protect"],
+        explicacion:
+          "MapGroup crea un prefijo común y RequireAuthorization() sobre el grupo protege todos sus endpoints: sin token válido, 401 automático.",
+      },
+      {
+        tipo: "huecos",
+        parte: "Parte 5 · Endpoints protegidos",
+        enunciado: "Devuelve SOLO los gastos del usuario que llama:",
+        codigo:
+          "gastos.MapGet(\"/\", async (ClaimsPrincipal user, GastosDb db) =>\n{\n    var usuarioId = int.Parse(user.FindFirstValue(ClaimTypes.{0})!);\n\n    var misGastos = await db.Gastos\n        .{1}(g => g.UsuarioId == usuarioId)\n        .ToListAsync();\n\n    return Results.Ok(misGastos);\n});",
+        respuestas: ["NameIdentifier", "Where"],
+        banco: ["NameIdentifier", "Where", "Email", "Select", "FindAsync"],
+        explicacion:
+          "ClaimsPrincipal es el usuario autenticado: de ahí sale el id que metimos en el token al hacer login. El Where garantiza que nadie ve gastos ajenos.",
+      },
+      {
+        tipo: "ordenar",
+        parte: "Parte 5 · Endpoints protegidos",
+        enunciado: "Ordena el DELETE que comprueba que el gasto es tuyo:",
+        items: [
+          "gastos.MapDelete(\"/{id}\", async (int id, ClaimsPrincipal user, GastosDb db) =>",
+          "{",
+          "    var gasto = await db.Gastos.FindAsync(id);",
+          "    if (gasto is null) return Results.NotFound();",
+          "    if (gasto.UsuarioId != UsuarioIdDe(user)) return Results.Forbid();",
+          "    db.Gastos.Remove(gasto); await db.SaveChangesAsync();",
+          "    return Results.NoContent();",
+          "});",
+        ],
+        explicacion:
+          "Primero ¿existe? (404), luego ¿es tuyo? (403), y solo entonces se borra (204). Este patrón de autorización por propietario es clave en cualquier API multiusuario.",
+      },
+      {
+        tipo: "quiz",
+        parte: "Parte 5 · Endpoints protegidos",
+        pregunta: "¿Cuál es la diferencia entre responder 401 y 403?",
+        opciones: [
+          "401: no sé quién eres (sin token válido); 403: sé quién eres pero no puedes hacer eso",
+          "Son equivalentes, da igual cuál usar",
+          "401 es para GET y 403 para DELETE",
+          "403 solo se usa con formularios web",
+        ],
+        correcta: 0,
+        explicacion:
+          "En GastosAPI: llamar sin token → 401. Llamar con token pero intentar borrar el gasto de otro usuario → 403. Códigos precisos = clientes que saben qué hacer.",
+      },
+      // ---- Parte 6 · Validación y remate ----
+      {
+        tipo: "huecos",
+        parte: "Parte 6 · Validación y remate",
+        enunciado: "Blinda la entrada de datos con un DTO validado:",
+        codigo:
+          "public class CrearGastoDto\n{\n    [{0}]\n    public string Concepto { get; set; } = \"\";\n\n    [{1}(0.01, 100000)]\n    public decimal Cantidad { get; set; }\n}",
+        respuestas: ["Required", "Range"],
+        banco: ["Required", "Range", "NotEmpty", "Max", "Validate"],
+        explicacion:
+          "Sin validación, alguien podría crear gastos vacíos o negativos. Con DataAnnotations la petición inválida se rechaza con 400 antes de tocar tu lógica.",
+      },
+      {
+        tipo: "quiz",
+        parte: "Parte 6 · Validación y remate",
+        pregunta: "¿Por qué los endpoints usan DTOs en vez de las entidades Usuario/Gasto directamente?",
+        opciones: [
+          "Para no exponer campos sensibles (¡PasswordHash!) y controlar exactamente qué entra y sale",
+          "Porque las entidades no se pueden serializar a JSON",
+          "Para que el código ocupe más líneas",
+          "Es un requisito de SQLite",
+        ],
+        correcta: 0,
+        explicacion:
+          "Si devolvieras la entidad Usuario, el PasswordHash saldría en el JSON. El DTO define el contrato público de la API, independiente de la base de datos.",
+      },
+      {
+        tipo: "ordenar",
+        parte: "Parte 6 · Validación y remate",
+        enunciado: "Repasa el Program.cs completo de GastosAPI:",
+        items: [
+          "var builder = WebApplication.CreateBuilder(args);",
+          "// servicios: AddDbContext, AddAuthentication + AddJwtBearer, AddAuthorization",
+          "var app = builder.Build();",
+          "app.UseAuthentication();",
+          "app.UseAuthorization();",
+          "// endpoints: /auth/registro, /auth/login y el grupo protegido /gastos",
+          "app.Run();",
+        ],
+        explicacion:
+          "La foto completa: configurar servicios → construir la app → pipeline de seguridad → endpoints → Run. Toda API ASP.NET Core sigue este esqueleto.",
+      },
+      {
+        tipo: "quiz",
+        parte: "Parte 6 · Validación y remate",
+        pregunta: "¡GastosAPI terminada! 🏆 ¿Cómo la harías crecer?",
+        opciones: [
+          "Añadir categorías e informes mensuales, escribir tests y desplegarla con Docker",
+          "Reescribirla entera en otro framework",
+          "Quitar la autenticación para simplificar",
+          "Guardar las contraseñas en claro para depurar mejor",
+        ],
+        correcta: 0,
+        explicacion:
+          "Ya tienes el esqueleto de cualquier API profesional: modelo + EF Core + auth + endpoints protegidos + validación. Constrúyela de verdad en tu máquina: dotnet new webapi y a por ello 🚀",
       },
     ],
   },

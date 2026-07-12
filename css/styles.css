@@ -169,6 +169,13 @@ button {
   letter-spacing: 0.4px;
 }
 
+.etiqueta-parte {
+  color: var(--acento);
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: -10px;
+}
+
 .enunciado { font-size: 20px; line-height: 1.35; }
 
 .pista { color: var(--texto-suave); font-size: 12px; }

@@ -136,6 +136,7 @@ function renderEjercicio() {
 
   const zona = el("main", "zona-ejercicio");
   zona.append(el("p", "etiqueta-modulo", `${modulo.icono} ${modulo.titulo}`));
+  if (ejercicio.parte) zona.append(el("p", "etiqueta-parte", ejercicio.parte));
 
   const controlador =
     ejercicio.tipo === "quiz" ? montarQuiz(zona, ejercicio)

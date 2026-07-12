@@ -23,6 +23,7 @@ Una app web (PWA) 100 % estática pensada para el móvil. En vez de leer documen
 5. 🗄️ Datos con EF Core — `DbContext`, migraciones, LINQ
 6. 🔐 Seguridad — JWT, autorización, CORS
 7. 🏗️ Proyecto real — validación, `ProblemDetails`, Docker
+8. 🏆 App completa: GastosAPI — construye una API real de principio a fin, en 6 partes: modelo de datos, base de datos, registro, login con JWT, endpoints protegidos y validación
 
 ## Desarrollo
 
